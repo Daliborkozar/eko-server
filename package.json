@@ -4,8 +4,8 @@
   "description": "eko server",
   "main": "server.js",
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node -r dotenv/config server.js",
+    "dev": "nodemon -r dotenv/config server.js"
   },
   "author": "Dalibor Kozar",
   "license": "ISC",
