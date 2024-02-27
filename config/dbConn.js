@@ -1,14 +1,34 @@
 const mongoose = require('mongoose');
+const { sleep } = require('../utils/utilts.js');
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.DATABASE_URI, {
-            useUnifiedTopology: true,
-            useNewUrlParser: true
-        });
-    } catch (err) {
-        console.error(err);
-    }
-}
+  const MAX_CONNECTION_RETRIES = 3;
+  const CONNECTION_RETRY_DELAY = 2000; // in milliseconds
+  let RETRY_COUNT = 0;
 
-module.exports = connectDB
+  const uri = process.env.DATABASE_URI || 'mongodb://localhost:27017/test';
+
+  while (RETRY_COUNT < MAX_CONNECTION_RETRIES) {
+    try {
+      mongoose.set('strictQuery', true);
+      await mongoose.connect(uri);
+
+      console.log(`Mongodb connection established`);
+
+      break;
+    } catch (error) {
+      console.log('MongoDB connection error:', error);
+      RETRY_COUNT++;
+
+      if (RETRY_COUNT === MAX_CONNECTION_RETRIES) {
+        console.log('Maximum connection retries reached. Exiting...');
+        throw error;
+      }
+
+      console.log(`Retrying connection in ${CONNECTION_RETRY_DELAY / 1000} seconds...`);
+      await sleep(CONNECTION_RETRY_DELAY);
+    }
+  }
+};
+
+module.exports = connectDB;
