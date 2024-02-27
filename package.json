@@ -2,7 +2,6 @@
   "name": "eko-server",
   "version": "1.0.0",
   "description": "eko server",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node -r dotenv/config server.js",
