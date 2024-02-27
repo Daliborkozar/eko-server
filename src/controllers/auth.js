@@ -43,6 +43,7 @@ const handleLogin = async (req, res) => {
       ? foundUser.refreshToken
       : foundUser.refreshToken.filter(rt => rt !== cookies.jwt);
 
+    // remove cookie
     if (cookies?.jwt) {
       /* 
             Scenario added here: 
