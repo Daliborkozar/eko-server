@@ -2,6 +2,7 @@
   "name": "eko-server",
   "version": "1.0.0",
   "description": "eko server",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node -r dotenv/config server.js",
@@ -25,8 +26,9 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
     "nodemon": "^2.0.12",
-    "prettier": "^3.2.5",
-    "prettier-eslint": "^16.3.0"
+    "prettier": "^3.2.5"
   }
 }
