@@ -28,7 +28,7 @@ const deleteOrgUser = async (req, res) => {
   // Implement the logic for deleting a user (you can use a similar approach for other controllers)
 };
 
-module.exports = {
+module.exports = AdminController = {
   getAllOrgUsers,
   deleteOrgUser,
 };

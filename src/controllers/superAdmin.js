@@ -46,7 +46,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = {
+module.exports = SuperAdminController = {
   getAllAdminUsers,
   deleteUser,
   getAllUsers,

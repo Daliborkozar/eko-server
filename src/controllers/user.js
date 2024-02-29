@@ -25,7 +25,7 @@ const getUser = async (req, res) => {
   res.json(user);
 };
 
-module.exports = {
+module.exports = UserController = {
   getAllUsers,
   deleteUser,
   getUser,

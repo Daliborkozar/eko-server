@@ -8,21 +8,26 @@ const userSchema = new Schema(
       trim: true,
       maxLength: [50, 'Maximum 50 characters'],
     },
-    roles: {
-      User: String,
-      Admin: String,
-      SuperAdmin: String,
+    role: {
+      type: String,
+      trim: true,
+      required: true,
     },
     password: {
       type: String,
       required: true,
+      select: false,
     },
     organization: {
       type: String,
+      trim: true,
+      required: true,
     },
     email: {
       type: String,
       unique: true,
+      required: true,
+      trim: true,
     },
     isActive: {
       type: Boolean,
@@ -31,11 +36,11 @@ const userSchema = new Schema(
     displayName: {
       type: String,
     },
-    // createdAt: { type: Date, default: Date.now },
-    // refreshToken: [String] //ne treba
   },
   { timestamps: true }
 );
+
+userSchema.index({ isActive: 1, isActive: 1 });
 
 const User = model('User', userSchema);
 module.exports = User;
