@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+require('express-async-errors');
 const app = express();
 const path = require('path');
 const cors = require('cors');
@@ -61,14 +62,13 @@ app.get('/', (req, res) => {
   res.status(200).send(`Welcome to eko-vel server`);
 });
 
-app.use('/register', require('./routes/patient'));
 app.use('/auth', require('./routes/auth'));
-app.use('/refresh', require('./routes/refresh'));
-app.use('/logout', require('./routes/logout'));
+app.use('/patient', require('./routes/patient'));
+
 //app.use('/admin', require('./routes/api/admins'))
 
 // move auth to routes
-// app.use(verifyJWT);
+
 //app.use('/employees', require('./routes/api/employees'));
 app.use('/users', require('./routes/users'));
 app.use('/superadmin', require('./routes/superadmins'));
