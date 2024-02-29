@@ -22,7 +22,7 @@ patients he admitted
 
 - add delete/edit on table
 
-//TODO separate by domains( folders ), add relations
+//TODO separate by domains( folders ), add relations 0. patient schema
 
 1. izmeniti login da cuva sve info o useru u token
 2. namestiti token expiry itd
