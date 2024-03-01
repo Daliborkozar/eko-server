@@ -1,4 +1,4 @@
-const logger = app => {
+const LoadLogger = app => {
   // const path = require('path');
   const morgan = require('morgan');
   // const rfs = require('rotating-file-stream');
@@ -14,4 +14,4 @@ const logger = app => {
   app.use(morgan(':date[web] | :method :url :status :res[content-length] - :response-time ms'));
 };
 
-module.exports = logger;
+module.exports = LoadLogger;

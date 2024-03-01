@@ -7,4 +7,4 @@ router.post('/login', AuthController.handleLogin);
 router.post('/logout', AuthController.handleLogout);
 router.post('/refresh', AuthController.handleRefreshToken);
 
-module.exports = AuthRouter = router;
+module.exports = router;

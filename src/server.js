@@ -10,11 +10,12 @@ const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
 const connectDB = require('./config/dbConn');
 const helmet = require('helmet');
-const logger = require('./middleware/logger');
+const LoadLogger = require('./middleware/logger');
 const compression = require('compression');
+const { LoadRoutes } = require('./routes');
 
 // setup logs
-logger(app);
+LoadLogger(app);
 
 // headers
 
@@ -62,17 +63,7 @@ app.get('/', (req, res) => {
   res.status(200).send(`Welcome to eko-vel server`);
 });
 
-app.use('/auth', require('./routes/auth'));
-app.use('/patient', require('./routes/patient'));
-
-//app.use('/admin', require('./routes/api/admins'))
-
-// move auth to routes
-
-//app.use('/employees', require('./routes/api/employees'));
-app.use('/users', require('./routes/users'));
-app.use('/superadmin', require('./routes/superadmins'));
-// app.use('/', require('./routes/superadmins')); ??
+LoadRoutes(app);
 
 // app.all('*', (req, res) => {
 //   res.status(404);
