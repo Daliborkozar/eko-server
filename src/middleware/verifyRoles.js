@@ -1,16 +1,17 @@
-const ROLES_LIST = require('../config/roles_list');
+const Role = require('../model/role');
 
-const verifyRoles = (...allowedRoles) => {
-  return (req, res, next) => {
-    if (!req?.role) return res.sendStatus(401);
+const verifyRoles = async (req, res, next) => {
+  if (!req?.user) return res.sendStatus(401);
 
-    const rolesArray = [...allowedRoles];
+  if (!req.user.role) return res.sendStatus(401);
 
-    if (!ROLES_LIST.includes(req.role) || !rolesArray.includes(req.role))
-      return res.sendStatus(401);
+  const role = await Role.findOne({ name: req.user.role }).lean();
 
-    next();
-  };
+  if (!role) return res.sendStatus(401);
+
+  req.user.manages = role.manages;
+
+  next();
 };
 
 module.exports = verifyRoles;
