@@ -18,4 +18,8 @@ const createPatient = async (req, res) => {
   return res.status(201).send(patient);
 };
 
-module.exports = PatientController = { createPatient };
+const getAllPatients = async query => {
+  return Patient.find(query).lean();
+};
+
+module.exports.PatientController = { createPatient, getAllPatients };
