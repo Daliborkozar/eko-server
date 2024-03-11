@@ -1,23 +1,8 @@
-const ROLES_LIST = ['SuperAdmin', 'Admin', 'User', 'Patient'];
+const ROLES = {
+  SuperAdmin: 'SuperAdmin',
+  Admin: 'Admin',
+  User: 'User',
+  Patient: 'Patient',
+};
 
-// roles as in db
-const ROLES = [
-  {
-    name: 'SuperAdmin',
-    manages: ['SuperAdmin', 'Admin', 'User', 'Patient'],
-  },
-  {
-    name: 'Admin',
-    manages: ['User', 'Patient'],
-  },
-  {
-    name: 'User',
-    manages: ['User', 'Patient'],
-  },
-  {
-    name: 'Patient',
-    manages: [''],
-  },
-];
-
-module.exports = ROLES_LIST;
+module.exports = ROLES;
