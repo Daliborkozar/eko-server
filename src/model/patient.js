@@ -17,7 +17,7 @@ const patientDataSchema = new Schema({
   },
   identityId: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     maxLength: [255, 'Max of 255 characters'],
   },
@@ -66,7 +66,7 @@ const patientDataSchema = new Schema({
   },
   legAlignmentLeft: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     maxLength: [255, 'Max of 255 characters'],
   },
@@ -96,7 +96,7 @@ const patientDataSchema = new Schema({
   },
   legAlignmentRight: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     maxLength: [255, 'Max of 255 characters'],
   },
@@ -108,12 +108,12 @@ const patientDataSchema = new Schema({
   },
   selectedLeg: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     maxLength: [255, 'Max of 255 characters'],
   },
-  leftFootprintSplit: { type: Boolean, required: true },
-  rightFootprintSplit: { type: Boolean, required: true },
+  leftFootprintSplit: { type: Boolean, required: false },
+  rightFootprintSplit: { type: Boolean, required: false },
   therapy: {
     escSize: {
       type: String,
