@@ -1,13 +1,25 @@
 const ROLES = require('../config/roles_list');
-const Patient = require('../model/patient');
 const User = require('../model/user');
+const { PatientController } = require('./patient');
 
+//
 const getAllUsers = async (req, res) => {
   const { user } = req;
 
-  const query = { role: { $in: user.role.manages, organization: user.organization } };
+  const pQuery = buildPatientQuery(user._id, user.role, user.organization);
 
-  const [users, patients] = await Promise.all([User.find(query).lean(), Patient.find({}).lean()]);
+  const patients = await PatientController.getAllPatients(pQuery);
+
+  if (user.role === ROLES.User) {
+    return res.status(200).send(patients);
+  }
+
+  const uQuery = buildUserQuery(user._id, user.role, user.organization);
+
+  const users = await User.find(uQuery).lean();
+
+  console.log('uqeruy', uQuery);
+  console.log('pQuery', pQuery);
 
   return res.status(200).send({ users, patients });
 };
@@ -78,15 +90,31 @@ const handleNewUser = async (req, res) => {
   }
 };
 
-// const buildQueryBasedOnRole = (role) => {
+const buildUserQuery = (userId, role, organization) => {
+  const baseQuery = { _id: { $ne: userId } };
 
-//   return role === ROLES.Admin.name ? {
-//     role: { $in: user.role.manages, organization: user.organization }
+  // ima li jedan ili vise admina iste organizacije?
+  return role === ROLES.Admin
+    ? {
+        ...baseQuery,
+        role: ROLES.User,
+        organization,
+      }
+    : baseQuery; // superadmin
+};
 
-//   } : role === ROLES.User.name ? {
-//     role: { $in: user.role.manages, organization: user.organization }
-//   }
-// }
+const buildPatientQuery = (userId, role, organization) => {
+  return role === ROLES.Admin
+    ? {
+        organization,
+      }
+    : role === ROLES.User
+      ? {
+          organization,
+          admittedBy: userId,
+        }
+      : {};
+};
 
 module.exports.UserController = {
   getAllUsers,
