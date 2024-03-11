@@ -1,22 +1,8 @@
-const ROLES_LIST = ['SuperAdmin', 'Admin', 'User', 'Patient'];
-
 const ROLES = {
-  SuperAdmin: {
-    name: 'SuperAdmin',
-    manages: ['SuperAdmin', 'Admin', 'User', 'Patient'],
-  },
-  Admin: {
-    name: 'Admin',
-    manages: ['User', 'Patient'],
-  },
-  User: {
-    name: 'User',
-    manages: ['User', 'Patient'],
-  },
-  Patient: {
-    name: 'Patient',
-    manages: [''],
-  },
+  SuperAdmin: 'SuperAdmin',
+  Admin: 'Admin',
+  User: 'User',
+  Patient: 'Patient',
 };
 
-module.exports = { ROLES_LIST, ROLES };
+module.exports = ROLES;

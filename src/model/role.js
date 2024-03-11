@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const { ROLES_LIST } = require('../config/roles_list');
+const ROLES = require('../config/roles_list');
 
 const schema = new Schema(
   {
@@ -16,7 +16,7 @@ const schema = new Schema(
         _id: false,
         type: String,
         trim: true,
-        enum: ROLES_LIST,
+        enum: Object.values(ROLES),
       },
     ],
   },

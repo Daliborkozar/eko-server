@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const { ROLES_LIST } = require('../config/roles_list');
+const ROLES = require('../config/roles_list');
 
 const userSchema = new Schema(
   {
@@ -13,7 +13,7 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       required: true,
-      enum: ROLES_LIST,
+      enum: [ROLES.SuperAdmin, ROLES.Admin, ROLES.User],
     },
     password: {
       type: String,
@@ -45,7 +45,8 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.index({ isActive: 1, isActive: 1 });
+userSchema.index({ isActive: 1, role: 1 });
+userSchema.index({ isActive: 1, organization: 1 });
 
 const User = model('User', userSchema);
 module.exports = User;

@@ -1,4 +1,4 @@
-const { ROLES } = require('../config/roles_list');
+const ROLES = require('../config/roles_list');
 const Patient = require('../model/patient');
 
 const createPatient = async (req, res) => {
@@ -8,7 +8,7 @@ const createPatient = async (req, res) => {
     ...req.body,
     admittedBy: user._id,
     organization: user.organization,
-    role: ROLES.Patient.name,
+    role: ROLES.Patient,
   };
 
   const patient = (await Patient.create(patientData)).toObject();

@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const { ROLES_LIST } = require('../config/roles_list');
+const ROLES = require('../config/roles_list');
 
 const patientSchema = new Schema(
   {
@@ -7,7 +7,7 @@ const patientSchema = new Schema(
       type: String,
       trim: true,
       required: true,
-      default: ROLES_LIST.Patient,
+      default: ROLES.Patient,
     },
     organization: {
       type: String,
