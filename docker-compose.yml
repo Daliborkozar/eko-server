@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  api:
+    container_name: eko-vel-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # on production no need to add this since cmd in dockerfile will execute
+    command: npm run dev
+    # needed for watch scripts
+    volumes:
+      - .:/app
+    ports:
+      - '5001:5001'
+    env_file:
+      - .env
