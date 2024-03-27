@@ -18,8 +18,27 @@ const createPatient = async (req, res) => {
   return res.status(201).send(patient);
 };
 
-const getAllPatients = async query => {
-  return Patient.find(query).lean();
+const getAllPatients = async (req, res) => {
+  const { user } = req;
+
+  const query = buildPatientQuery(user._id, user.role, user.organization);
+
+  const patients = await Patient.find(query).lean();
+
+  return res.status(200).json({ patients });
+};
+
+const buildPatientQuery = (userId, role, organization) => {
+  return role === ROLES.Admin
+    ? {
+        organization,
+      }
+    : role === ROLES.User
+      ? {
+          organization,
+          admittedBy: userId,
+        }
+      : {}; //superadmin
 };
 
 module.exports.PatientController = { createPatient, getAllPatients };
