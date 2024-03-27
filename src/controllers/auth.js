@@ -1,7 +1,6 @@
 const User = require('../model/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { CookieOptions } = require('../config/cookie');
+const { Utils } = require('../utils/utilts');
 
 const handleLogin = async (req, res) => {
   const { email, pwd } = req.body;
@@ -15,13 +14,13 @@ const handleLogin = async (req, res) => {
   if (!foundUser.isActive) return res.status(400).send({ message: 'User not active' });
 
   // Evaluate password
-  const match = await comparePassword(pwd, foundUser.password); // ovo se ne poklapa na create-u
+  const match = await Utils.comparePassword(pwd, foundUser.password); // ovo se ne poklapa na create-u
 
   if (!match) return res.sendStatus(400);
 
   const { _id, role, organization, displayName } = foundUser;
 
-  const accessToken = jwt.sign(
+  const accessToken = Utils.signToken(
     {
       user: {
         _id,
@@ -33,7 +32,7 @@ const handleLogin = async (req, res) => {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
   );
 
-  const refreshToken = jwt.sign({ _id }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = Utils.signToken({ _id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
   });
 
@@ -56,7 +55,7 @@ const handleRefreshToken = async (req, res) => {
   let userId = null;
 
   try {
-    const decoded = verifyToken(req.cookies.refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const decoded = Utils.verifyToken(req.cookies.refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     if (!decoded._id) throw new Error();
 
@@ -69,7 +68,7 @@ const handleRefreshToken = async (req, res) => {
 
   if (!user) return res.sendStatus(404);
 
-  const accessToken = signToken(
+  const accessToken = Utils.signToken(
     {
       user: {
         _id: userId,
@@ -81,7 +80,7 @@ const handleRefreshToken = async (req, res) => {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
   );
 
-  const refreshToken = signToken({ _id: userId }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = Utils.signToken({ _id: userId }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
   });
 
@@ -98,18 +97,6 @@ const me = async (req, res) => {
   if (!user) return res.sendStatus(404);
 
   return res.status(200).send(user);
-};
-
-const comparePassword = async (plainPw, hash) => {
-  return bcrypt.compare(plainPw, hash);
-};
-
-const verifyToken = (accessToken, key) => {
-  return jwt.verify(accessToken, key);
-};
-
-const signToken = (payload, key, options) => {
-  return jwt.sign(payload, key, options);
 };
 
 module.exports.AuthController = {
