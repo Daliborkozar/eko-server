@@ -5,7 +5,7 @@ const { Utils } = require('../utils/utilts');
 const getAllUsers = async (req, res) => {
   const { user } = req;
 
-  const uQuery = buildUserQuery(user._id, user.role, user.organization);
+  const uQuery = buildUserQuery(user._id, user.role, user.organization, req.query?.search);
 
   const users = await User.find(uQuery).lean();
 
@@ -58,16 +58,34 @@ const create = async (req, res) => {
   return res.status(201).json({ message: `New user created!` });
 };
 
-const buildUserQuery = (userId, role, organization) => {
-  const baseQuery = { _id: { $ne: userId } };
+const buildUserQuery = (userId, role, organization, search) => {
+  const query = { _id: { $ne: userId } };
 
-  return role === ROLES.Admin
-    ? {
-        ...baseQuery,
-        role: ROLES.User,
-        organization,
-      }
-    : baseQuery; // superadmin
+  if (role === ROLES.Admin) {
+    query.role = ROLES.User;
+    query.organization = organization;
+  }
+
+  if (search && search !== undefined && typeof search === 'string') {
+    const regexSearch = { $regex: search, $options: 'i' };
+
+    const searchFilters = [
+      {
+        email: regexSearch,
+        displayName: regexSearch,
+      },
+    ];
+
+    if (role === ROLES.SuperAdmin) {
+      searchFilters.push({
+        organization: regexSearch,
+      });
+    }
+
+    query.$or = searchFilters;
+  }
+
+  return query;
 };
 
 module.exports.UserController = {
