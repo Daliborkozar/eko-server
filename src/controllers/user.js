@@ -9,7 +9,7 @@ const getAllUsers = async (req, res) => {
 
   const users = await User.find(uQuery).lean();
 
-  return res.status(200).send(users);
+  return res.status(200).send({ users });
 };
 
 const deleteUser = async (req, res) => {
