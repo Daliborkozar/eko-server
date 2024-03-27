@@ -6,11 +6,17 @@ const { PatientController } = require('../controllers/patient');
 
 const router = express.Router();
 
-router.post(
-  '/',
-  verifyJWT,
-  verifyRoles([ROLES.SuperAdmin, ROLES.Admin, ROLES.User]),
-  PatientController.createPatient
-);
+router
+  .route('/')
+  .get(
+    verifyJWT,
+    verifyRoles([ROLES.SuperAdmin, ROLES.Admin, ROLES.User]),
+    PatientController.getAllPatients
+  )
+  .post(
+    verifyJWT,
+    verifyRoles([ROLES.SuperAdmin, ROLES.Admin, ROLES.User]),
+    PatientController.createPatient
+  );
 
 module.exports = router;
