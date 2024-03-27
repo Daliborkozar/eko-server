@@ -3,12 +3,6 @@ const ROLES = require('../config/roles_list');
 
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      trim: true,
-      maxLength: [50, 'Maximum 50 characters'],
-    },
     role: {
       type: String,
       trim: true,

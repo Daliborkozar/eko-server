@@ -1,32 +1,29 @@
 const User = require('../model/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { CookieOptions } = require('../config/cookie');
+const { Utils } = require('../utils/utilts');
 
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body;
+  const { email, pwd } = req.body;
 
-  if (!user || !pwd)
-    return res.status(400).json({ message: 'Username and password are required.' });
+  if (!email || !pwd) return res.status(400).json({ message: 'Email and password are required.' });
 
-  const foundUser = await User.findOne({ username: user }).select('+password');
+  const foundUser = await User.findOne({ email }).select('+password');
 
   if (!foundUser) return res.sendStatus(400);
 
   if (!foundUser.isActive) return res.status(400).send({ message: 'User not active' });
 
   // Evaluate password
-  const match = await comparePassword(pwd, foundUser.password); // ovo se ne poklapa na create-u
+  const match = await Utils.comparePassword(pwd, foundUser.password); // ovo se ne poklapa na create-u
 
   if (!match) return res.sendStatus(400);
 
-  const { _id, username, role, organization, displayName } = foundUser;
+  const { _id, role, organization, displayName } = foundUser;
 
-  const accessToken = jwt.sign(
+  const accessToken = Utils.signToken(
     {
       user: {
         _id,
-        username,
         role,
         organization,
       },
@@ -35,7 +32,7 @@ const handleLogin = async (req, res) => {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
   );
 
-  const refreshToken = jwt.sign({ _id }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = Utils.signToken({ _id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
   });
 
@@ -52,38 +49,13 @@ const handleLogin = async (req, res) => {
   });
 };
 
-// moze samo na frontu
-const handleLogout = async (req, res) => {
-  return res.sendStatus(200);
-  // // On client, also delete the accessToken
-
-  // const cookies = req.cookies;
-  // if (!cookies?.jwt) return res.sendStatus(204); //No content
-  // const refreshToken = cookies.jwt;
-
-  // // Is refreshToken in db?
-  // const foundUser = await User.findOne({ refreshToken }).exec();
-  // if (!foundUser) {
-  //   res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-  //   return res.sendStatus(204);
-  // }
-
-  // // Delete refreshToken in db
-  // foundUser.refreshToken = foundUser.refreshToken.filter(rt => rt !== refreshToken);
-  // const result = await foundUser.save();
-  // console.log(result);
-
-  // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-  // res.sendStatus(204);
-};
-
 const handleRefreshToken = async (req, res) => {
   if (!req.cookies?.refreshToken) return res.sendStatus(401);
 
   let userId = null;
 
   try {
-    const decoded = verifyToken(req.cookies.refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const decoded = Utils.verifyToken(req.cookies.refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
     if (!decoded._id) throw new Error();
 
@@ -96,11 +68,10 @@ const handleRefreshToken = async (req, res) => {
 
   if (!user) return res.sendStatus(404);
 
-  const accessToken = signToken(
+  const accessToken = Utils.signToken(
     {
       user: {
         _id: userId,
-        username: user.username,
         role: user.role,
         organization: user.organization,
       },
@@ -109,7 +80,7 @@ const handleRefreshToken = async (req, res) => {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
   );
 
-  const refreshToken = signToken({ _id: userId }, process.env.REFRESH_TOKEN_SECRET, {
+  const refreshToken = Utils.signToken({ _id: userId }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
   });
 
@@ -128,21 +99,8 @@ const me = async (req, res) => {
   return res.status(200).send(user);
 };
 
-const comparePassword = async (plainPw, hash) => {
-  return bcrypt.compare(plainPw, hash);
-};
-
-const verifyToken = (accessToken, key) => {
-  return jwt.verify(accessToken, key);
-};
-
-const signToken = (payload, key, options) => {
-  return jwt.sign(payload, key, options);
-};
-
 module.exports.AuthController = {
   handleLogin,
-  handleLogout,
   handleRefreshToken,
   me,
 };
