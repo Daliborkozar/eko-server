@@ -41,9 +41,9 @@ const userSchema = new Schema(
 
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
+userSchema.index({ displayName: 1 });
 userSchema.index({ role: 1, organization: 1 });
-userSchema.index({ isActive: 1, role: 1 });
-userSchema.index({ isActive: 1, organization: 1 });
+userSchema.index({ email: 1, organization: 1, displayName: 1 });
 
 const User = model('User', userSchema);
 module.exports = User;
