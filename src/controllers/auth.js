@@ -4,12 +4,11 @@ const jwt = require('jsonwebtoken');
 const { CookieOptions } = require('../config/cookie');
 
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body;
+  const { email, pwd } = req.body;
 
-  if (!user || !pwd)
-    return res.status(400).json({ message: 'Username and password are required.' });
+  if (!email || !pwd) return res.status(400).json({ message: 'Email and password are required.' });
 
-  const foundUser = await User.findOne({ username: user }).select('+password');
+  const foundUser = await User.findOne({ email }).select('+password');
 
   if (!foundUser) return res.sendStatus(400);
 
@@ -20,13 +19,12 @@ const handleLogin = async (req, res) => {
 
   if (!match) return res.sendStatus(400);
 
-  const { _id, username, role, organization, displayName } = foundUser;
+  const { _id, role, organization, displayName } = foundUser;
 
   const accessToken = jwt.sign(
     {
       user: {
         _id,
-        username,
         role,
         organization,
       },
@@ -52,31 +50,6 @@ const handleLogin = async (req, res) => {
   });
 };
 
-// moze samo na frontu
-const handleLogout = async (req, res) => {
-  return res.sendStatus(200);
-  // // On client, also delete the accessToken
-
-  // const cookies = req.cookies;
-  // if (!cookies?.jwt) return res.sendStatus(204); //No content
-  // const refreshToken = cookies.jwt;
-
-  // // Is refreshToken in db?
-  // const foundUser = await User.findOne({ refreshToken }).exec();
-  // if (!foundUser) {
-  //   res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-  //   return res.sendStatus(204);
-  // }
-
-  // // Delete refreshToken in db
-  // foundUser.refreshToken = foundUser.refreshToken.filter(rt => rt !== refreshToken);
-  // const result = await foundUser.save();
-  // console.log(result);
-
-  // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-  // res.sendStatus(204);
-};
-
 const handleRefreshToken = async (req, res) => {
   if (!req.cookies?.refreshToken) return res.sendStatus(401);
 
@@ -100,7 +73,6 @@ const handleRefreshToken = async (req, res) => {
     {
       user: {
         _id: userId,
-        username: user.username,
         role: user.role,
         organization: user.organization,
       },
@@ -142,7 +114,6 @@ const signToken = (payload, key, options) => {
 
 module.exports.AuthController = {
   handleLogin,
-  handleLogout,
   handleRefreshToken,
   me,
 };
